@@ -1,19 +1,24 @@
 ---
 sudo: required
-services: docker
-addons:
-  apt:
-    packages:
-    - docker-ce
-env:
-  - INTEGRATION=false ELASTIC_STACK_VERSION=5.x
-  - INTEGRATION=false ELASTIC_STACK_VERSION=6.x
-  - INTEGRATION=false ELASTIC_STACK_VERSION=7.x
-  - DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=6.x
-  - DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=7.x
-  - DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=7.x SNAPSHOT=true
-  - DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=8.x SNAPSHOT=true
-  - DISTRIBUTION=default SECURE_INTEGRATION=true INTEGRATION=true ELASTIC_STACK_VERSION=7.x
-  - DISTRIBUTION=oss INTEGRATION=true ELASTIC_STACK_VERSION=7.x
-install: ci/docker-setup.sh
-script: ci/docker-run.sh
+language: minimal
+matrix:
+  include:
+  - env: ELASTIC_STACK_VERSION=5.x
+    install: ci/unit/docker-setup.sh
+    script: ci/unit/docker-run.sh
+  - env: ELASTIC_STACK_VERSION=6.x
+    install: ci/unit/docker-setup.sh
+    script: ci/unit/docker-run.sh
+  - env: ELASTIC_STACK_VERSION=7.x
+    install: ci/unit/docker-setup.sh
+    script: ci/unit/docker-run.sh
+  # integration
+  - env: DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=6.x
+  - env: DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=7.x
+  - env: DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=7.x SNAPSHOT=true
+  - env: DISTRIBUTION=default INTEGRATION=true ELASTIC_STACK_VERSION=8.x SNAPSHOT=true
+  - env: DISTRIBUTION=default SECURE_INTEGRATION=true INTEGRATION=true ELASTIC_STACK_VERSION=7.x
+  - env: DISTRIBUTION=oss INTEGRATION=true ELASTIC_STACK_VERSION=7.x
+# only for integration tests (for unit these are overriden)
+install: ci/integration/docker-setup.sh
+script: ci/integration/docker-run.sh
